@@ -41,15 +41,25 @@ runs:
       run: |
         rm -rf desktop-snaps
       shell: bash
-    - name: create pull request
-      id: cpr
-      uses: peter-evans/create-pull-request@v4
-      with:
-        branch: automated-tag-update
-        delete-branch: true
-    - name: Check outputs
-      if: ${{ steps.cpr.outputs.pull-request-number }}
+    - name: Commit files
       run: |
-        echo "Pull Request Number - ${{ steps.cpr.outputs.pull-request-number }}"
-        echo "Pull Request URL - ${{ steps.cpr.outputs.pull-request-url }}"
-      shell: bash
+        git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "github-actions[bot]"
+        git commit -a -m "Update tag"
+    - name: Push changes
+      uses: ad-m/github-push-action@master
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        branch: ${{ github.ref }}
+    #- name: create pull request
+    #  id: cpr
+    #  uses: peter-evans/create-pull-request@v4
+    #  with:
+    #    branch: automated-tag-update
+    #    delete-branch: true
+    #- name: Check outputs
+    #  if: ${{ steps.cpr.outputs.pull-request-number }}
+    #  run: |
+    #    echo "Pull Request Number - ${{ steps.cpr.outputs.pull-request-number }}"
+    #    echo "Pull Request URL - ${{ steps.cpr.outputs.pull-request-url }}"
+    #  shell: bash
